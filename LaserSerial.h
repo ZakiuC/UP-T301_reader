@@ -67,9 +67,6 @@ private:
     std::thread readerThread_;
     bool running_;
     void readerThreadFunc();
-
-    
-
 };
 
 #endif // LASERSERIAL_H
