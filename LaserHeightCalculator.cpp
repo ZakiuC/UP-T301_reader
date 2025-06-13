@@ -7,11 +7,13 @@ constexpr double DEG_TO_RAD = M_PI / 180.0;
 
 LaserHeightCalculator::LaserHeightCalculator(const std::string& device1, 
                                             const std::string& device2,
-                                            double angle_deg, 
+                                            double angle_deg,
+                                            double center_buff,
                                             speed_t baud)
     : sensor1_(device1, baud),
       sensor2_(device2, baud),
-      angle_rad_(angle_deg * DEG_TO_RAD) {
+      angle_rad_(angle_deg * DEG_TO_RAD),
+      center_buff_(center_buff){
     
     // 设置回调
     sensor1_.setCallback([this](const LaserData& data) { this->sensor1Callback(data); });
@@ -98,8 +100,8 @@ void LaserHeightCalculator::calculationThreadFunc() {
           
         // 三角测量计算高度
         // 公式: h = (d1 * d2 * sin(θ)) / sqrt(d1² + d2² - 2*d1*d2*cos(θ))
-        const double d1 = static_cast<double>(dist1);
-        const double d2 = static_cast<double>(dist2);
+        const double d1 = static_cast<double>(dist1) + center_buff_;
+        const double d2 = static_cast<double>(dist2) + center_buff_;
         const double cos_theta = std::cos(angle_rad_);
         const double sin_theta = std::sin(angle_rad_);
         
